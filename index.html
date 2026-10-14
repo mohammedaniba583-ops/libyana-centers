@@ -294,12 +294,11 @@ const API_KEY = '$2a$10$3ExnK78umB2m0Ngf5wn6.uvMYiWSDS7neSAkms91YLADmnh.N/bm6';
             return;
         }
 
-        document.getElementById('result').innerHTML = `⏳ جاري البحث عن الموقع وقياس المسافة عبر الإنترنت...`;
+        document.getElementById('result').innerHTML = `⏳ جاري البحث عن الموقع وقياس المسافة للبدائل عبر الإنترنت...`;
 
         let userLat, userLng, locationName;
 
         try {
-            // استخدام خدمة جغرافية مجانية عبر الإنترنت لجلب إحداثيات أي مكان في ليبيا يكتبه المستخدم
             const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ', Libya')}`);
             const data = await response.json();
 
@@ -308,35 +307,52 @@ const API_KEY = '$2a$10$3ExnK78umB2m0Ngf5wn6.uvMYiWSDS7neSAkms91YLADmnh.N/bm6';
                 userLng = parseFloat(data[0].lon);
                 locationName = data[0].display_name;
             } else {
-                // إذا لم يتم العثور عليها بدقة، نلجأ لمركز طرابلس الافتراضي
                 userLat = 32.8872;
                 userLng = 13.1913;
                 locationName = query + " (تم التوجيه لطرابلس لعدم دقة الاسم الجغرافي)";
             }
         } catch (error) {
-            console.warn("خطأ في الاتصال بخدمة الخرائط، استخدام الإحداثيات الافتراضية:", error);
+            console.warn("خطأ في الاتصال بخدمة الخرائط:", error);
             userLat = 32.8872;
             userLng = 13.1913;
             locationName = query;
         }
 
-        let nearest = null;
-        let minDistance = Infinity;
-
-        libyanaCenters.forEach(center => {
+        // حساب المسافات لجميع المراكز وتخزينها مع بياناتها
+        let centersWithDistances = libyanaCenters.map(center => {
             const dist = calculateDistance(userLat, userLng, center.lat, center.lng);
-            if (dist < minDistance) {
-                minDistance = dist;
-                nearest = center;
-            }
+            return { ...center, distance: dist };
         });
 
-        // عرض النتيجة بدقة تامة وبدون تداخل في التنسيق
-        document.getElementById('result').innerHTML = `
-            📍 <b>الموقع المُحدد:</b> ${locationName}<br>
-            🏢 <b>أقرب مركز مبيعات:</b> <span style="color: var(--primary-purple);"><b>${nearest.city} - ${nearest.name}</b></span> (${nearest.desc})<br>
-            📏 <b>المسافة التقريبية:</b> ${minDistance.toFixed(2)} كم &nbsp;|&nbsp; ⏰ <b>توقيت العمل:</b> ${nearest.time}
+        // ترتيب المراكز من الأقرب إلى الأبعد
+        centersWithDistances.sort((a, b) => a.distance - b.distance);
+
+        // أخذ أقرب 3 مراكز (البدائل الاحتياطية)
+        const topCenters = centersWithDistances.slice(0, 3);
+
+        if (topCenters.length === 0) {
+            document.getElementById('result').innerHTML = `❌ عذراً، لا توجد مراكز مبيعات مسجلة حالياً.`;
+            return;
+        }
+
+        // بناء نص النتيجة لعرض المركز الأساسي وأقرب البدائل تحته
+        let resultHtml = `
+            📍 <b>الموقع المُحدد:</b> ${locationName}<br><br>
+            🏢 <b>المركز الأساسي المقترح:</b> <span style="color: var(--primary-purple);"><b>${topCenters[0].city} - ${topCenters[0].name}</b></span> (${topCenters[0].desc})<br>
+            📏 <b>المسافة:</b> ${topCenters[0].distance.toFixed(2)} كم &nbsp;|&nbsp; ⏰ <b>الدوام:</b> ${topCenters[0].time}
         `;
+
+        if (topCenters.length > 1) {
+            resultHtml += `<br><br><div style="border-top: 1px dashed var(--border-color); padding-top: 8px; margin-top: 5px;">
+                🔄 <b>البدائل الاحتياطية (في حال الإغلاق أو الازدحام):</b><br>`;
+            
+            for (let i = 1; i < topCenters.length; i++) {
+                resultHtml += `&nbsp;&nbsp;• <b>${topCenters[i].city} - ${topCenters[i].name}</b> (${topCenters[i].distance.toFixed(2)} كم) - ⏰ ${topCenters[i].time}<br>`;
+            }
+            resultHtml += `</div>`;
+        }
+
+        document.getElementById('result').innerHTML = resultHtml;
     }
 
     loadCloudCenters();
