@@ -12,11 +12,11 @@
             --border-color: #dcd6f7;
             --input-bg: #ffffff;
             --input-text: #2b2b2b;
-            --table-header: #5e35b1;
+            --table-header: #e90dde;
             --table-header-text: #ffffff;
             --table-alt: #f3eafd;
             --result-bg: #ede7f6;
-            --primary-purple: #5e35b1;
+            --primary-purple: #ff00ea;
             --primary-purple-hover: #4527a0;
         }
 
@@ -27,36 +27,84 @@
             --border-color: #3b3054;
             --input-bg: #241f33;
             --input-text: #ffffff;
-            --table-header: #7e57c2;
+            --table-header: #e612c2;
             --table-header-text: #ffffff;
             --table-alt: #221c30;
             --result-bg: #28203d;
-            --primary-purple: #7e57c2;
+            --primary-purple: #ff00ea;
             --primary-purple-hover: #9575cd;
         }
 
         body { font-family: Tahoma, sans-serif; margin: 0; padding: 20px; background: var(--bg-color); color: var(--text-color); transition: background 0.3s, color 0.3s; }
-        .container { max-width: 950px; margin: auto; background: var(--container-bg); padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(94, 53, 177, 0.08); }
+        .container { max-width: 950px; margin: auto; background: var(--container-bg); padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(94, 53, 177, 0.08); position: relative; }
         
-        .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid var(--border-color); padding-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+        .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid var(--border-color); padding-bottom: 15px; flex-wrap: wrap; gap: 10px; }
         .brand-section { display: flex; align-items: center; gap: 15px; }
         .libyana-logo {
             width: 50px; height: 50px;
-            background: linear-gradient(135deg, #5e35b1, #b39ddb);
+            background: transparent; overflow: hidden;
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            color: white; font-weight: bold; font-size: 20px; box-shadow: 0 3px 8px rgba(94, 53, 177, 0.3);
+            box-shadow: 0 3px 8px rgba(94, 53, 177, 0.3);
         }
 
         h1 { color: var(--primary-purple); margin: 0; font-size: 24px; }
-        .controls { display: flex; gap: 10px; }
+        .controls { display: flex; gap: 10px; align-items: center; }
         .btn { padding: 9px 16px; background: var(--primary-purple); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; transition: background 0.2s; }
         .btn:hover { background: var(--primary-purple-hover); }
         .btn-danger { background: #d32f2f; }
+        .btn-warning { background: #f57c00; color: white; }
+        .btn-success { background: #2e7d32; color: white; }
         .btn-secondary { background: #757575; }
+
+        /* مؤشر حالة المركز (أخضر/أحمر) */
+        .status-dot {
+            display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-left: 8px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+        }
+        .status-dot.active { background-color: #2e7d32; }
+        .status-dot.down { background-color: #d32f2f; }
+
+        /* زر الجرس العلوي للإشعارات */
+        .notification-bell-btn {
+            background: #ff00ea; color: white; border: none; width: 40px; height: 40px;
+            border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            font-size: 18px; box-shadow: 0 2px 6px rgba(255, 0, 234, 0.4); position: relative; transition: transform 0.2s;
+        }
+        .notification-bell-btn:hover { transform: scale(1.08); }
+        .bell-badge {
+            position: absolute; top: -3px; right: -3px; background: #d32f2f; color: white;
+            font-size: 10px; width: 16px; height: 16px; border-radius: 50%; display: none; align-items: center; justify-content: center;
+        }
+
+        /* قائمة الإشعارات الجانبية (Drawer) */
+        .notification-drawer {
+            position: fixed; top: 0; right: -350px; width: 330px; height: 100%;
+            background: var(--container-bg); border-left: 2px solid var(--border-color);
+            box-shadow: -5px 0 15px rgba(0,0,0,0.15); z-index: 1000; transition: right 0.3s ease;
+            padding: 20px; box-sizing: border-box; display: flex; flex-direction: column;
+        }
+        .notification-drawer.open { right: 0; }
+        .drawer-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 15px; }
+        .drawer-content { flex: 1; overflow-y: auto; font-size: 14px; line-height: 1.6; display: flex; flex-direction: column; gap: 10px; }
+
+        /* شريط الأخبار المتحرك */
+        .ticker-container {
+            background: #d32f2f; color: white; padding: 10px 15px; border-radius: 6px;
+            margin-bottom: 20px; display: flex; align-items: center; gap: 10px; font-weight: bold; font-size: 14px;
+            box-shadow: 0 2px 8px rgba(211, 47, 47, 0.3);
+        }
+        .ticker-icon { font-size: 18px; animation: ring 1.5s infinite; }
+        @keyframes ring {
+            0% { transform: rotate(0deg); }
+            20% { transform: rotate(15deg); }
+            40% { transform: rotate(-15deg); }
+            60% { transform: rotate(10deg); }
+            80% { transform: rotate(-10deg); }
+            100% { transform: rotate(0deg); }
+        }
 
         .search-box { margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
         input { flex: 1; min-width: 250px; padding: 11px; font-size: 15px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--input-bg); color: var(--input-text); outline: none; }
-        .tips { font-size: 12px; opacity: 0.75; margin-bottom: 20px; }
         #result { margin-bottom: 20px; padding: 14px; background: var(--result-bg); border-radius: 6px; font-weight: 500; border-right: 4px solid var(--primary-purple); line-height: 1.6; }
         
         table { width: 100%; border-collapse: collapse; margin-bottom: 25px; border-radius: 6px; overflow: hidden; }
@@ -73,15 +121,29 @@
 
 <div class="container">
     <div class="header-bar">
-        <div class="brand-section">
-            <div class="libyana-logo">Ly</div>
+       <div class="brand-section">
+            <div class="libyana-logo">
+                <img src="libyana.png" alt="Libyana Logo" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.parentElement.innerHTML='Ly'">
+            </div>
             <div>
-                <h1>مراكز مبيعات ليبيانا</h1>
+                <h1>مراكز مبيعات شركة ليبيانا</h1>
             </div>
         </div>
         <div class="controls">
+            <button class="notification-bell-btn" onclick="toggleDrawer()" title="لوحة الإشعارات">
+                🔔
+                <span id="bellBadge" class="bell-badge">0</span>
+            </button>
             <button class="btn btn-secondary" onclick="toggleTheme()">🌓 وضع العرض</button>
             <button class="btn" id="adminLoginBtn" onclick="toggleAdminMode()">🔐 دخول المشرفين</button>
+        </div>
+    </div>
+
+    <!-- شريط الإشعارات المتحرك -->
+    <div id="tickerWrapper" class="ticker-container" style="display: none;">
+        <div class="ticker-icon">📢</div>
+        <div style="flex: 1; overflow: hidden; white-space: nowrap;">
+            <marquee id="tickerText" scrollamount="3" scrolldelay="85">جاري التحميل...</marquee>
         </div>
     </div>
     
@@ -93,7 +155,8 @@
 
     <!-- لوحة المشرفين -->
     <div id="adminPanel" class="admin-section">
-        <h3 style="margin-top: 0; color: var(--primary-purple);"> : إضافة مركز مبيعات جديد </h3>
+        <h3 id="panelTitle" style="margin-top: 0; color: var(--primary-purple);">إضافة مركز مبيعات جديد:</h3>
+        <input type="hidden" id="editIndex" value="-1">
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
             <input type="text" id="newCity" placeholder="المدينة">
             <input type="text" id="newName" placeholder="اسم المركز">
@@ -102,8 +165,19 @@
             <input type="number" step="any" id="newLat" placeholder="خط العرض تقريبي">
             <input type="number" step="any" id="newLng" placeholder="خط الطول تقريبي">
         </div>
-        <button class="btn" id="saveBtn" onclick="addNewCenter()">حفظ وتحديث القائمة </button>
-        <span id="statusMsg" class="loading-text" style="display:none; margin-right: 10px;">جاري التحديث السحابي...</span>
+        <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 20px; flex-wrap: wrap;">
+            <button class="btn" id="saveBtn" onclick="saveCenterAction()">حفظ وتحديث القائمة</button>
+            <button class="btn btn-secondary" id="cancelEditBtn" onclick="resetForm()" style="display:none;">إلغاء التعديل</button>
+            <span id="statusMsg" class="loading-text" style="display:none; margin-right: 10px;">جاري التحديث السحابي...</span>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid var(--border-color); margin-bottom: 15px;">
+        <h4 style="margin: 0 0 10px 0; color: var(--primary-purple);">📢 إدارة شريط الإشعارات والتنبيهات:</h4>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <input type="text" id="adminTickerInput" placeholder="اكتب نص الخبر أو التنبيه العاجل (مثلاً: توقف مؤقت بمركز تاجوراء للصيانة)..." style="flex: 2;">
+            <button class="btn" onclick="addNotification()">إضافة ونشر الإشعار</button>
+            <button class="btn btn-danger" onclick="clearAllNotifications()">مسح كافة الإشعارات</button>
+        </div>
     </div>
 
     <!-- جدول المراكز -->
@@ -111,10 +185,11 @@
     <table>
         <thead>
             <tr>
+                <th>الحالة</th>
                 <th>المدينة والمركز</th>
                 <th>وصف الموقع</th>
                 <th>توقيت العمل</th>
-                <th class="admin-col" style="display:none;">إجراءات</th>
+                <th class="admin-col" style="display:none;">إجراءات وتحكم بالحالة</th>
             </tr>
         </thead>
         <tbody id="centersTableBody">
@@ -123,57 +198,62 @@
     </table>
 </div>
 
+<!-- القائمة الجانبية للإشعارات (Drawer) -->
+<div id="notificationDrawer" class="notification-drawer">
+    <div class="drawer-header">
+        <h3 style="margin: 0; color: var(--primary-purple);">🔔 سجل الإشعارات العاجلة</h3>
+        <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 12px;" onclick="toggleDrawer()">✕</button>
+    </div>
+    <div id="drawerBody" class="drawer-content">
+        لا توجد إشعارات نشطة حالياً.
+    </div>
+</div>
+
 <script>
-    // إعدادات الربط السحابي مع JSONbin (ضع مفاتيحك الخاصة هنا لتفعيل الربط التلقائي)
-   const BIN_ID = '6acce1f0ffd5d1605364518c';
-const API_KEY = '$2a$10$3ExnK78umB2m0Ngf5wn6.uvMYiWSDS7neSAkms91YLADmnh.N/bm6';
+    const BIN_ID = '6acce1f0ffd5d1605364518c';
+    const API_KEY = '$2a$10$3ExnK78umB2m0Ngf5wn6.uvMYiWSDS7neSAkms91YLADmnh.N/bm6';
     const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
-    const keywordMap = [
-        { keywords: ["طرابلس", "عمر المختار", "الجزيرة", "بن عاشور", "الظهرة", "سوق الجمعة"], lat: 32.8872, lng: 13.1913, city: "طرابلس" },
-        { keywords: ["تاجوراء", "المستوصف"], lat: 32.8797, lng: 13.3856, city: "تاجوراء" },
-        { keywords: ["حي الأندلس", "قرقارش"], lat: 32.8423, lng: 13.1631, city: "طرابلس" },
-        { keywords: ["بنغازي", "جمال عبد الناصر", "البركة"], lat: 32.1194, lng: 20.0686, city: "بنغازي" },
-        { keywords: ["مصراتة", "وسط المدينة"], lat: 32.3754, lng: 15.0925, city: "مصراتة" }
-    ];
-
-    let libyanaCenters = [
-        { name: "مركز طرابلس الرئيسي", city: "طرابلس", desc: "بجانب الجزيرة الكبرى", time: "08:00 ص - 03:00 م", lat: 32.8872, lng: 13.1913 },
-        { name: "مركز تاجوراء", city: "طرابلس", desc: "مقابل مستوصف تاجوراء", time: "08:30 ص - 02:30 م", lat: 32.8797, lng: 13.3856 },
-        { name: "مركز حي الأندلس", city: "طرابلس", desc: "بالقرب من الجزيرة التجارية", time: "08:00 ص - 03:00 م", lat: 32.8423, lng: 13.1631 },
-        { name: "مركز بنغازي الرئيسي", city: "بنغازي", desc: "شارع جمال عبد الناصر", time: "08:00 ص - 03:00 م", lat: 32.1194, lng: 20.0686 }
-    ];
+    let dbData = {
+        centers: [
+            { name: "مركز طرابلس الرئيسي", city: "طرابلس", desc: "بجانب الجزيرة الكبرى", time: "08:00 ص - 03:00 م", lat: 32.8872, lng: 13.1913, status: "active" },
+            { name: "مركز تاجوراء", city: "طرابلس", desc: "مقابل مستوصف تاجوراء", time: "08:30 ص - 02:30 م", lat: 32.8797, lng: 13.3856, status: "active" },
+            { name: "مركز حي الأندلس", city: "طرابلس", desc: "بالقرب من الجزيرة التجارية", time: "08:00 ص - 03:00 م", lat: 32.8423, lng: 13.1631, status: "active" },
+            { name: "مركز بنغازي الرئيسي", city: "بنغازي", desc: "شارع جمال عبد الناصر", time: "08:00 ص - 03:00 م", lat: 32.1194, lng: 20.0686, status: "active" }
+        ],
+        notifications: []
+    };
 
     let isAdmin = false;
 
-    // جلب أحدث بيانات سحابياً عند فتح الصفحة
-    async function loadCloudCenters() {
-        if (!BIN_ID || BIN_ID.includes('ضع_هنا')) {
-            document.getElementById('result').innerText = "اكتب اسم الشارع أو المنطقة في الحقل أعلاه لمعرفة أقرب مركز مبيعات والمسافة فوراً.";
-            renderTable();
-            return;
-        }
-
+    async function loadCloudData() {
         try {
             const res = await fetch(`${API_URL}/latest`, {
                 headers: { 'X-Master-Key': API_KEY }
             });
             const data = await res.json();
-            if (data.record && Array.isArray(data.record)) {
-                libyanaCenters = data.record;
+            if (data.record) {
+                if (Array.isArray(data.record)) {
+                    dbData.centers = data.record.map(c => ({ ...c, status: c.status || "active" }));
+                } else if (data.record.centers) {
+                    dbData.centers = data.record.centers.map(c => ({ ...c, status: c.status || "active" }));
+                    if (data.record.notifications && Array.isArray(data.record.notifications)) {
+                        dbData.notifications = data.record.notifications;
+                    } else if (data.record.announcement) {
+                        dbData.notifications = [data.record.announcement];
+                    }
+                }
             }
             document.getElementById('result').innerText = "تم تحديث أحدث بيانات المراكز بنجاح. اكتب المنطقة للبحث.";
         } catch (e) {
-            console.warn("تعذر الجلب السحابي، جاري استخدام البيانات المحلية:", e);
+            console.warn("تعذر الجلب السحابي، استخدام البيانات المحلية:", e);
             document.getElementById('result').innerText = "اكتب اسم الشارع أو المنطقة في الحقل أعلاه لمعرفة أقرب مركز مبيعات والمسافة فوراً.";
         }
         renderTable();
+        renderNotifications();
     }
 
-    // حفظ البيانات سحابياً عند إضافة مركز جديد
-    async function saveCloudCenters() {
-        if (!BIN_ID || BIN_ID.includes('ضع_هنا')) return true;
-
+    async function saveCloudData() {
         document.getElementById('statusMsg').style.display = 'inline';
         try {
             await fetch(API_URL, {
@@ -182,14 +262,93 @@ const API_KEY = '$2a$10$3ExnK78umB2m0Ngf5wn6.uvMYiWSDS7neSAkms91YLADmnh.N/bm6';
                     'Content-Type': 'application/json',
                     'X-Master-Key': API_KEY
                 },
-                body: JSON.stringify(libyanaCenters)
+                body: JSON.stringify(dbData)
             });
             document.getElementById('statusMsg').style.display = 'none';
             return true;
         } catch (e) {
-            alert("حدث خطأ أثناء حفظ التعديل سحابياً، يرجى التأكد من الاتصال بالإنترنت.");
+            alert("حدث خطأ أثناء حفظ البيانات سحابياً، يرجى التأكد من الاتصال بالإنترنت.");
             document.getElementById('statusMsg').style.display = 'none';
             return false;
+        }
+    }
+
+    function renderNotifications() {
+        const wrapper = document.getElementById('tickerWrapper');
+        const tickerText = document.getElementById('tickerText');
+        const drawerBody = document.getElementById('drawerBody');
+        const bellBadge = document.getElementById('bellBadge');
+        
+        if (dbData.notifications && dbData.notifications.length > 0) {
+            tickerText.innerText = dbData.notifications.join(' ⟪ 📍 ⟫ ');
+            wrapper.style.display = 'flex';
+            
+            let drawerHtml = '';
+            for (let i = dbData.notifications.length - 1; i >= 0; i--) {
+                drawerHtml += `
+                    <div style="background: var(--result-bg); padding: 12px; border-radius: 6px; border-right: 4px solid #d32f2f; margin-bottom: 8px; position: relative;">
+                        <b>تنبيه عاجل:</b><br>${dbData.notifications[i]}
+                        ${isAdmin ? `<br><button class="btn btn-danger" style="padding: 3px 8px; font-size: 11px; margin-top: 8px;" onclick="deleteSingleNotification(${i})">تم الحل ✕ (حذف التنبيه)</button>` : ''}
+                    </div>`;
+            }
+            drawerBody.innerHTML = drawerHtml;
+            
+            bellBadge.innerText = dbData.notifications.length;
+            bellBadge.style.display = 'flex';
+        } else {
+            wrapper.style.display = 'none';
+            drawerBody.innerHTML = "لا توجد إشعارات نشطة حالياً.";
+            bellBadge.style.display = 'none';
+        }
+    }
+
+    function toggleDrawer() {
+        const drawer = document.getElementById('notificationDrawer');
+        drawer.classList.toggle('open');
+    }
+
+    async function addNotification() {
+        const text = document.getElementById('adminTickerInput').value.trim();
+        if (!text) {
+            alert("الرجاء كتابة نص الإشعار أولاً.");
+            return;
+        }
+        dbData.notifications.push(text);
+        const saved = await saveCloudData();
+        if (saved) {
+            renderNotifications();
+            document.getElementById('adminTickerInput').value = '';
+            alert("تم إضافة ونشر الإشعار الجديد بنجاح للجميع!");
+        }
+    }
+
+    async function deleteSingleNotification(index) {
+        if (confirm("هل تم حل المشكلة وتريد إزالة هذا التنبيه المحدد؟")) {
+            dbData.notifications.splice(index, 1);
+            const saved = await saveCloudData();
+            if (saved) {
+                renderNotifications();
+            }
+        }
+    }
+
+    async function clearAllNotifications() {
+        if (confirm("هل أنت متأكد من مسح كافة الإشعارات نهائياً؟")) {
+            dbData.notifications = [];
+            const saved = await saveCloudData();
+            if (saved) {
+                renderNotifications();
+                alert("تم تفريغ كافة الإشعارات وإخفاؤها للجميع.");
+            }
+        }
+    }
+
+    // تبديل حالة المركز بين يعمل (أخضر) وعطل (أحمر)
+    async function toggleCenterStatus(index) {
+        dbData.centers[index].status = dbData.centers[index].status === 'down' ? 'active' : 'down';
+        const saved = await saveCloudData();
+        if (saved) {
+            renderTable();
         }
     }
 
@@ -197,14 +356,27 @@ const API_KEY = '$2a$10$3ExnK78umB2m0Ngf5wn6.uvMYiWSDS7neSAkms91YLADmnh.N/bm6';
         const tbody = document.getElementById('centersTableBody');
         tbody.innerHTML = '';
 
-        libyanaCenters.forEach((center, index) => {
+        dbData.centers.sort((a, b) => a.city.localeCompare(b.city, 'ar'));
+
+        dbData.centers.forEach((center, index) => {
+            const isDown = center.status === 'down';
+            const statusClass = isDown ? 'down' : 'active';
+            const statusText = isDown ? 'عطل (متوقف)' : 'يعمل (طبيعي)';
+
             let row = `<tr>
+                <td style="text-align: center;"><span class="status-dot ${statusClass}" title="${statusText}"></span></td>
                 <td><b>${center.city}</b> - ${center.name}</td>
                 <td>${center.desc}</td>
                 <td>${center.time}</td>`;
             
             if (isAdmin) {
-                row += `<td class="admin-col"><button class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;" onclick="deleteCenter(${index})">حذف</button></td>`;
+                row += `<td class="admin-col" style="white-space: nowrap;">
+                    <button class="btn ${isDown ? 'btn-success' : 'btn-danger'}" style="padding: 5px 10px; font-size: 12px; margin-left: 5px;" onclick="toggleCenterStatus(${index})">
+                        ${isDown ? '🟢 تحويل ليعمل' : '🔴 إعلان عطل'}
+                    </button>
+                    <button class="btn btn-warning" style="padding: 5px 10px; font-size: 12px; margin-left: 5px;" onclick="editCenter(${index})">تعديل</button>
+                    <button class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;" onclick="deleteCenter(${index})">حذف</button>
+                </td>`;
             }
             row += `</tr>`;
             tbody.innerHTML += row;
@@ -229,6 +401,7 @@ const API_KEY = '$2a$10$3ExnK78umB2m0Ngf5wn6.uvMYiWSDS7neSAkms91YLADmnh.N/bm6';
                 document.getElementById('adminPanel').classList.add('active');
                 document.getElementById('adminLoginBtn').innerText = "🔓 خروج المشرف";
                 renderTable();
+                renderNotifications();
             } else if (pass !== null) {
                 alert("كلمة المرور غير صحيحة!");
             }
@@ -236,44 +409,82 @@ const API_KEY = '$2a$10$3ExnK78umB2m0Ngf5wn6.uvMYiWSDS7neSAkms91YLADmnh.N/bm6';
             isAdmin = false;
             document.getElementById('adminPanel').classList.remove('active');
             document.getElementById('adminLoginBtn').innerText = "🔐 دخول المشرفين";
+            resetForm();
             renderTable();
+            renderNotifications();
         }
     }
 
-    async function addNewCenter() {
-        const city = document.getElementById('newCity').value;
-        const name = document.getElementById('newName').value;
-        const desc = document.getElementById('newDesc').value;
-        const time = document.getElementById('newTime').value;
+    function editCenter(index) {
+        const center = dbData.centers[index];
+        document.getElementById('newCity').value = center.city;
+        document.getElementById('newName').value = center.name;
+        document.getElementById('newDesc').value = center.desc;
+        document.getElementById('newTime').value = center.time;
+        document.getElementById('newLat').value = center.lat;
+        document.getElementById('newLng').value = center.lng;
+        document.getElementById('editIndex').value = index;
+
+        document.getElementById('panelTitle').innerText = "تعديل بيانات مركز المبيعات:";
+        document.getElementById('saveBtn').innerText = "تحديث بيانات المركز";
+        document.getElementById('cancelEditBtn').style.display = 'inline-block';
+        window.scrollTo({ top: document.getElementById('adminPanel').offsetTop, behavior: 'smooth' });
+    }
+
+    function resetForm() {
+        document.getElementById('newCity').value = '';
+        document.getElementById('newName').value = '';
+        document.getElementById('newDesc').value = '';
+        document.getElementById('newTime').value = '';
+        document.getElementById('newLat').value = '';
+        document.getElementById('newLng').value = '';
+        document.getElementById('editIndex').value = '-1';
+
+        document.getElementById('panelTitle').innerText = "إضافة مركز مبيعات جديد:";
+        document.getElementById('saveBtn').innerText = "حفظ وتحديث القائمة";
+        document.getElementById('cancelEditBtn').style.display = 'none';
+    }
+
+    async function saveCenterAction() {
+        const city = document.getElementById('newCity').value.trim();
+        const name = document.getElementById('newName').value.trim();
+        const desc = document.getElementById('newDesc').value.trim();
+        const time = document.getElementById('newTime').value.trim();
         const lat = parseFloat(document.getElementById('newLat').value);
         const lng = parseFloat(document.getElementById('newLng').value);
+        const editIndex = parseInt(document.getElementById('editIndex').value);
 
         if (!city || !name || isNaN(lat) || isNaN(lng)) {
             alert("الرجاء تعبئة كافة بيانات المركز والإحداثيات بشكل صحيح.");
             return;
         }
 
-        libyanaCenters.push({ name, city, desc, time, lat, lng });
-        const saved = await saveCloudCenters();
+        if (editIndex === -1) {
+            dbData.centers.push({ name, city, desc, time, lat, lng, status: 'active' });
+        } else {
+            const currentStatus = dbData.centers[editIndex].status || 'active';
+            dbData.centers[editIndex] = { name, city, desc, time, lat, lng, status: currentStatus };
+        }
+
+        dbData.centers.sort((a, b) => a.city.localeCompare(b.city, 'ar'));
+
+        const saved = await saveCloudData();
         
         if (saved) {
-            document.getElementById('newCity').value = '';
-            document.getElementById('newName').value = '';
-            document.getElementById('newDesc').value = '';
-            document.getElementById('newTime').value = '';
-            document.getElementById('newLat').value = '';
-            document.getElementById('newLng').value = '';
-
+            resetForm();
             renderTable();
-            alert("تمت الإضافة بنجاح وتحديث الموقع للجميع فوراً!");
+            alert("تم الحفظ والتحديث بنجاح للجميع فوراً!");
         }
     }
 
     async function deleteCenter(index) {
         if (confirm("هل أنت متأكد من حذف هذا المركز لجميع المستخدمين؟")) {
-            libyanaCenters.splice(index, 1);
-            const saved = await saveCloudCenters();
-            if (saved) renderTable();
+            dbData.centers.splice(index, 1);
+            const saved = await saveCloudData();
+            if (saved) {
+                resetForm();
+                renderTable();
+            }
         }
     }
 
@@ -318,16 +529,12 @@ const API_KEY = '$2a$10$3ExnK78umB2m0Ngf5wn6.uvMYiWSDS7neSAkms91YLADmnh.N/bm6';
             locationName = query;
         }
 
-        // حساب المسافات لجميع المراكز وتخزينها مع بياناتها
-        let centersWithDistances = libyanaCenters.map(center => {
+        let centersWithDistances = dbData.centers.map(center => {
             const dist = calculateDistance(userLat, userLng, center.lat, center.lng);
             return { ...center, distance: dist };
         });
 
-        // ترتيب المراكز من الأقرب إلى الأبعد
         centersWithDistances.sort((a, b) => a.distance - b.distance);
-
-        // أخذ أقرب 3 مراكز (البدائل الاحتياطية)
         const topCenters = centersWithDistances.slice(0, 3);
 
         if (topCenters.length === 0) {
@@ -335,10 +542,9 @@ const API_KEY = '$2a$10$3ExnK78umB2m0Ngf5wn6.uvMYiWSDS7neSAkms91YLADmnh.N/bm6';
             return;
         }
 
-        // بناء نص النتيجة لعرض المركز الأساسي وأقرب البدائل تحته
         let resultHtml = `
             📍 <b>الموقع المُحدد:</b> ${locationName}<br><br>
-            🏢 <b>المركز الأساسي المقترح:</b> <span style="color: var(--primary-purple);"><b>${topCenters[0].city} - ${topCenters[0].name}</b></span> (${topCenters[0].desc})<br>
+            🏢 <b>المركز الأساسي المقترح:</b> <span style="color: var(--primary-purple);"><b>${topCenters[0].city} - ${topCenters[0].name}</b></span> (${topCenters[0].desc}) - <span style="color:${topCenters[0].status === 'down' ? '#d32f2f' : '#2e7d32'}; font-weight:bold;">${topCenters[0].status === 'down' ? '🔴 عطل' : '🟢 يعمل'}</span><br>
             📏 <b>المسافة:</b> ${topCenters[0].distance.toFixed(2)} كم &nbsp;|&nbsp; ⏰ <b>الدوام:</b> ${topCenters[0].time}
         `;
 
@@ -347,7 +553,8 @@ const API_KEY = '$2a$10$3ExnK78umB2m0Ngf5wn6.uvMYiWSDS7neSAkms91YLADmnh.N/bm6';
                 🔄 <b>البدائل الاحتياطية (في حال الإغلاق أو الازدحام):</b><br>`;
             
             for (let i = 1; i < topCenters.length; i++) {
-                resultHtml += `&nbsp;&nbsp;• <b>${topCenters[i].city} - ${topCenters[i].name}</b> (${topCenters[i].distance.toFixed(2)} كم) - ⏰ ${topCenters[i].time}<br>`;
+                const altStatus = topCenters[i].status === 'down' ? '🔴 عطل' : '🟢 يعمل';
+                resultHtml += `&nbsp;&nbsp;• <b>${topCenters[i].city} - ${topCenters[i].name}</b> (${topCenters[i].distance.toFixed(2)} كم) [${altStatus}] - ⏰ ${topCenters[i].time}<br>`;
             }
             resultHtml += `</div>`;
         }
@@ -355,11 +562,10 @@ const API_KEY = '$2a$10$3ExnK78umB2m0Ngf5wn6.uvMYiWSDS7neSAkms91YLADmnh.N/bm6';
         document.getElementById('result').innerHTML = resultHtml;
     }
 
-    loadCloudCenters();
+    loadCloudData();
 </script>
 <footer style="text-align: center; padding: 15px; margin-top: 30px; font-size: 14px; color: #666; border-top: 1px solid #eee;">
-    © 2026 All Rights Reserved | Developed by <strong>Mohammed Aniba</strong> - Libyana Sales Centers System
+    © 2026 All Rights Reserved | Developed by <strong>Libyana Call Center</strong> - Libyana Sales Centers System
 </footer>
- 
 </body>
 </html>
